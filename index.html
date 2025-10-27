@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>IIIT-NR Club Management</title>
+	<meta name="description" content="Explore IIIT-NR clubs, manage memberships, and track events." />
+	<meta name="theme-color" content="#4f46e5" />
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎓</text></svg>">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    
+	<script src="https://cdn.tailwindcss.com"></script>
+	
+	<style>
+		:root { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+		/* Dark mode (data-theme on html) */
+		html[data-theme="dark"] body { background: #0b1220; color: #e2e8f0; }
+		html[data-theme="dark"] .card { background: #111827; border-color: #1f2937; }
+		.card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 1rem; box-shadow: 0 4px 16px rgba(0,0,0,.08); transition: transform .2s, box-shadow .2s; }
+		.card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,.12); }
+		.btn { display:inline-flex; align-items:center; justify-content:center; border-radius:.75rem; font-weight:700; padding:.6rem 1rem; box-shadow:0 2px 6px rgba(0,0,0,.1); transition:transform .05s, background-color .2s; }
+		.btn:active { transform:scale(.98); }
+		.input { width:100%; padding:.75rem 1rem; border:1px solid #e5e7eb; border-radius:.75rem; outline: none; }
+		.input:focus { box-shadow: 0 0 0 6px rgba(79,70,229,.15); border-color:#6366f1; }
+		.label { font-size:.875rem; font-weight:600; color:#374151; margin-bottom:.35rem; display:block; }
+		.text-muted { color:#6b7280; }
+		.badge { font-size:.625rem; padding:.15rem .45rem; border-radius:999px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+		/* Utilities */
+		.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+		#site-logo { width:40px; height:40px; object-fit:contain; border-radius:8px; }
+		@media (min-width:640px) { #site-logo { width:48px; height:48px; } }
+	</style>
+ 
+
+	
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+	   <style>
+		body {
+	 background-image: url('IIIT NR.jpg');
+/* Replace with your image path */
+			background-size: cover; /* Fill the viewport */
+			background-position: center; /* Align image to left bottom */
+			background-repeat: no-repeat; /* Prevents tiling */
+			background-attachment: fixed; /* Keeps background fixed while scrolling */
+			min-height: 100vh;
+			margin: 0;
+			width: 100%;
+		}
+</style>
+
+	<!-- Header -->
+	<header class="bg-gradient-to-r from-indigo-800 to-purple-900 shadow-2xl sticky top-0 z-20">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center">
+				<a href="#/" class="flex items-center gap-3">
+					<img src="iiitnr_logo.jpg" alt="IIIT-NR" id="site-logo" onerror="(function(i){i.style.display='none';document.getElementById('site-logo-fallback').style.display='inline-block'})(this)" />
+					<!-- inline SVG fallback (hidden by default) -->
+					<svg id="site-logo-fallback" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" style="display:none;border-radius:8px;background:rgba(255,255,255,.06);padding:6px;">
+						<rect width="48" height="48" rx="8" fill="#6d28d9"></rect>
+						<text x="24" y="30" font-size="18" font-weight="700" text-anchor="middle" fill="white" font-family="Inter, sans-serif">II</text>
+					</svg>
+					<div class="flex items-center gap-3">
+						<span class="text-2xl sm:text-3xl font-extrabold text-white hover:text-teal-300 transition duration-200 uppercase">IIIT NR CLUB MANAGEMENT</span>
+						<!-- small badge next to heading (inline SVG) -->
+
+					</div>
+				</a>
+			<nav class="mt-3 sm:mt-0 flex items-center gap-3 text-sm font-semibold text-white">
+				<a href="#/" class="hover:text-teal-300 transition duration-150">Home</a>
+				<a href="#/create" class="hover:text-teal-300 transition duration-150">New Club</a>
+				<span id="auth-actions" class="flex items-center gap-3"></span>
+				<button id="settings-btn" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold shadow-inner transition" aria-label="Open settings">Settings</button>
+				<button id="theme-toggle" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold shadow-inner transition" aria-label="Toggle dark mode">Dark</button>
+				<div class="flex items-center gap-3">
+					<!-- digital clocks (local + UTC) -->
+					<div id="digital-clocks" class="text-right text-white text-xs leading-none">
+						<div class="text-[10px] text-white/80">Local</div>
+						<div id="digital-local" class="font-mono text-sm">--:--:--</div>
+						<div class="text-[10px] text-white/80 mt-1">UTC</div>
+						<div id="digital-utc" class="font-mono text-sm">--:--:--</div>
+					</div>
+					<span id="hello-user" class="text-indigo-200">Hello, <span id="current-user-name" class="font-mono bg-purple-700 px-3 py-1 rounded-full text-xs shadow-inner">Student</span></span>
+				</div>
+			</nav>
+		</div>
+	</header>
+
+	<!-- Main -->
+	<main id="app" class="flex-grow max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+		<!-- Routed content will be injected here -->
+	</main>
+
+	<!-- Footer -->
+
+	<!-- Event Gallery removed -->
+
+	<!-- Live location -->
+	<section class="max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+		<div class="card p-4">
+			<h3 class="text-xl font-bold mb-2">Find IIIT-NR (Live Location)</h3>
+			<p class="text-muted mb-3">IIIT Naya Raipur — Atal Nagar, Chhattisgarh, India</p>
+			<div class="w-full h-64 sm:h-96 rounded-lg overflow-hidden border">
+				<iframe src="https://www.google.com/maps?q=IIIT+Naya+Raipur&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+			</div>
+			<p class="text-sm mt-2"><a class="text-indigo-600 hover:underline" href="https://www.google.com/maps/search/?api=1&query=IIIT+Naya+Raipur" target="_blank" rel="noopener">Open in Google Maps</a></p>
+		</div>
+	</section>
+
+	<footer class="border-t border-gray-200">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-between text-sm">
+			<p class="text-muted">&copy; 2025 IIIT-NR. All rights reserved.</p>
+			<ul class="flex gap-4">
+				<li><a class="text-indigo-600 hover:underline" href="#">Privacy</a></li>
+				<li><a class="text-indigo-600 hover:underline" href="#">Terms</a></li>
+				<li><a class="text-indigo-600 hover:underline" href="#">Contact</a></li>
+			</ul>
+		</div>
+	</footer>
+
+	<script>
+		// ----------------------------
+		// Data + Storage (no backend)
+		// ----------------------------
+		const STORAGE_KEYS = {
+			clubs: 'iiitnr.clubs',
+			events: 'iiitnr.events',
+				currentUser: 'iiitnr.currentUser',
+			theme: 'iiitnr.theme'
+		};
+
+		// --- Backend API config (MySQL / Express)
+		const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+			? 'http://localhost:5000/api'
+			: '/api';
+		let backendAvailable = false;
+
+		async function apiGet(path) {
+			const res = await fetch(API_BASE + path, { headers: { 'Content-Type': 'application/json' } });
+			if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
+			return res.json();
+		}
+		async function apiPost(path, body) {
+			const res = await fetch(API_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+			if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
+			return res.json();
+		}
+		async function apiDelete(path) {
+			const res = await fetch(API_BASE + path, { method: 'DELETE' });
+			if (!res.ok) throw new Error(`DELETE ${path} failed: ${res.status}`);
+			return res.json();
+		}
+
+		async function apiPut(path, body) {
+			const res = await fetch(API_BASE + path, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+			if (!res.ok) throw new Error(`PUT ${path} failed: ${res.status}`);
+			return res.json();
+		}
+
+		// Try loading data from backend and populate localStorage shape expected by frontend
+		async function loadFromBackendOrLocal() {
+			try {
+				const [clubsRaw, eventsRaw, membershipsRaw] = await Promise.all([
+					apiGet('/clubs'),
+					apiGet('/events'),
+					apiGet('/memberships')
+				]);
+
+				// Build club map and attach events into club.events (frontend expects nested events)
+				const clubs = (clubsRaw || []).map(c => ({
+					id: String(c.id || c._id),
+					name: c.name,
+					description: c.description || '',
+					leaderId: c.ownerId || c.leaderId || null,
+					leaderName: c.leaderName || null,
+					memberIds: [],
+					logo: c.logo || null,
+					events: []
+				}));
+				const clubById = new Map(clubs.map(c => [String(c.id), c]));
+
+				// Events: attach to club.events and build flat events list
+				const flatEvents = (eventsRaw || []).map(e => ({
+					id: String(e.id || e._id),
+					title: e.title,
+					description: e.description || '',
+					date: e.datetime || e.date || null,
+					clubId: String((e.clubId && (e.clubId.id || e.clubId._id)) || e.clubId || ''),
+					rsvpUserIds: e.rsvps || []
+				}));
+				flatEvents.forEach(ev => {
+					const club = clubById.get(String(ev.clubId));
+					if (club) club.events.push(ev);
+				});
+
+				// Memberships: mark memberIds on clubs
+				(membershipsRaw || []).forEach(m => {
+					const cid = String(m.clubId);
+					const uid = m.userId;
+					const c = clubById.get(cid);
+					if (c && uid && !c.memberIds.includes(uid)) c.memberIds.push(uid);
+				});
+
+				// Persist to localStorage so existing UI functions can operate unchanged
+				localStorage.setItem(STORAGE_KEYS.clubs, JSON.stringify(clubs));
+				// flat events for legacy code paths
+				localStorage.setItem(STORAGE_KEYS.events, JSON.stringify(flatEvents));
+
+				backendAvailable = true;
+				console.info('Loaded data from backend API');
+				return true;
+			} catch (err) {
+				console.info('Backend not reachable, using localStorage demo. Error:', err && err.message ? err.message : err);
+				backendAvailable = false;
+				return false;
+			}
+		}
+
+		const DEFAULT_CLUBS = [
+			{ name: 'AIML', leaderName: 'Dr. A. Sharma', description: 'Explore Artificial Intelligence and Machine Learning—projects, papers, meetups.', events: [ { title: 'Intro to ML', date: '2025-10-15', description: 'Kickoff session on ML fundamentals.' } ] },
+			{ name: 'DEV CLUB', leaderName: 'Priya Verma', description: 'Developers club focusing on web, mobile, and open source projects.', events: [ { title: 'Open Source Sprint', date: '2025-11-12', description: 'Contribute to OSS together.' } ] },
+			{ name: 'TSOC', leaderName: 'Rohan Mehta', description: 'Technical Society of IIIT-NR—talks, meetups, and skill building.', events: [ { title: 'Tech Talks Marathon', date: '2025-11-18', description: 'Lightning talks across domains.' } ] },
+			{ name: 'MUN', leaderName: 'Aisha Khan', description: 'Model United Nations—debate, diplomacy, and global affairs.', events: [ { title: 'UN Sim 2025', date: '2025-12-01', description: 'Campus-wide MUN simulation.' } ] },
+			{ name: 'SHUTTER BUG', leaderName: 'Neeraj Patel', description: 'Photography and visual storytelling—walks, edits, and showcases.', events: [ { title: 'Photo Walk', date: '2025-10-28', description: 'Blue hour campus walk.' } ] },
+			{ name: 'IGNITERS', leaderName: 'Aryan Gupta', description: 'Dance club—choreography, workshops, and high-energy performances.', events: [ { title: 'Campus Dance Jam', date: '2025-11-05', description: 'Freestyle and choreography session.' } ] },
+			{ name: 'CLUB DE THEATRE', leaderName: 'Meera Iyer', description: 'Theatre and dramatics—acting, direction, and stage production.', events: [ { title: 'Stagecraft 101', date: '2025-10-20', description: 'Workshop on theatre production.' } ] },
+			{ name: 'AARAMBH(SPORTS CLUB)', leaderName: 'Kabir Singh', description: 'Sports and fitness—events, teams, and active campus life.', events: [ { title: 'Intra Sports Day', date: '2025-11-22', description: 'Track and field events.' } ] }
+		];
+
+		async function seedIfNeeded() {
+			if (!localStorage.getItem(STORAGE_KEYS.clubs)) {
+				const clubs = DEFAULT_CLUBS.map((c, idx) => ({
+					id: String(idx + 1),
+					name: c.name,
+					description: c.description,
+					leaderId: `u-${idx + 1}`,
+					leaderName: c.leaderName || 'Club Leader',
+					memberIds: [],
+					logo: null,
+					events: (c.events || []).map((e, i) => ({
+						id: `e-${idx + 1}-${i + 1}`,
+						title: e.title,
+						description: e.description,
+						date: e.date,
+						rsvpUserIds: []
+					}))
+				}));
+				localStorage.setItem(STORAGE_KEYS.clubs, JSON.stringify(clubs));
+			}
+			if (!localStorage.getItem(STORAGE_KEYS.events)) {
+				const clubs = JSON.parse(localStorage.getItem(STORAGE_KEYS.clubs) || '[]');
+				const flat = [];
+				clubs.forEach(c => (c.events || []).forEach(e => flat.push({ id: e.id, title: e.title, description: e.description, date: e.date, clubId: c.id })));
+				localStorage.setItem(STORAGE_KEYS.events, JSON.stringify(flat));
+			}
+			if (!localStorage.getItem(STORAGE_KEYS.currentUser)) {
+				localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify({ id: 'u-1', name: 'Student User' }));
+			}
+			// Ensure required clubs present
+			await ensureRequiredClubs(DEFAULT_CLUBS.map(c => c.name));
+		}
+
+		async function ensureRequiredClubs(requiredNames) {
+			const currentClubs = JSON.parse(localStorage.getItem(STORAGE_KEYS.clubs) || '[]');
+			const existing = new Set(currentClubs.map(c => (c.name || '').trim().toLowerCase()));
+			const add = requiredNames.filter(n => !existing.has(n.trim().toLowerCase()));
+			if (!add.length) return;
+			const start = currentClubs.length;
+			add.forEach((name, i) => currentClubs.push({
+				id: String(start + i + 1),
+				name,
+				description: defaultDescriptionForClub(name),
+				leaderId: 'u-1',
+				memberIds: [],
+				logo: null,
+				events: []
+			}));
+			localStorage.setItem(STORAGE_KEYS.clubs, JSON.stringify(currentClubs));
+		}
+
+		function defaultDescriptionForClub(name) {
+			const map = {
+				'AIML': 'Explore Artificial Intelligence and Machine Learning—projects, papers, meetups.',
+				'DEV CLUB': 'Developers club focusing on web, mobile, and open source projects.',
+				'TSOC': 'Technical Society of IIIT-NR—talks, meetups, and skill building.',
+				'MUN': 'Model United Nations—debate, diplomacy, and global affairs.',
+				'SHUTTER BUG': 'Photography and visual storytelling—walks, edits, and showcases.',
+				'CAPRICIO': 'Music and performing arts—bands, vocals, and jam sessions.',
+				'IGNITERS': 'Dance club—choreography, workshops, and high-energy performances.',
+				'CLUB DE THEATRE': 'Theatre and dramatics—acting, direction, and stage production.',
+				'AARAMBH(SPORTS CLUB)': 'Sports and fitness—events, teams, and active campus life.'
+			};
+			return map[name] || 'A vibrant IIIT-NR student club.';
+		}
+
+		function getLeaderName(club) {
+			return club.leaderName || 'Club Leader';
+		}
+
+		function getCurrentUser() {
+			const u = localStorage.getItem(STORAGE_KEYS.currentUser);
+			return u ? JSON.parse(u) : null;
+		}
+		async function getClubs() { await seedIfNeeded(); return JSON.parse(localStorage.getItem(STORAGE_KEYS.clubs) || '[]'); }
+		async function getClubById(id) { const clubs = await getClubs(); return clubs.find(c => c.id === String(id)) || null; }
+		async function saveClubs(clubs) { localStorage.setItem(STORAGE_KEYS.clubs, JSON.stringify(clubs)); }
+		async function createClub({ name, description, logo = null }) {
+			const user = getCurrentUser();
+			// try backend first
+			if (user && backendAvailable) {
+				try {
+					const payload = { name, description, logo, ownerId: user.id };
+					const c = await apiPost('/clubs', payload);
+					// create membership for creator
+					try { await apiPost('/memberships', { userId: user.id, clubId: String(c.id || c._id) }); } catch(e) { /* non-fatal */ }
+					// reload from backend into localStorage
+					await loadFromBackendOrLocal();
+					return { id: String(c.id || c._id), name: c.name, description: c.description, logo: c.logo };
+				} catch (err) {
+					console.warn('Create club via API failed, falling back to local:', err && err.message ? err.message : err);
+				}
+			}
+			// fallback local
+			const clubs = await getClubs();
+			const newId = String(clubs.length ? (parseInt(clubs[clubs.length - 1].id, 10) + 1) : 1);
+			const leaderId = user?.id || null;
+			const newClub = { id: newId, name, description, logo, leaderId, memberIds: [], events: [] };
+			clubs.push(newClub); await saveClubs(clubs); return newClub;
+		}
+		async function joinClub(clubId) {
+			const user = getCurrentUser();
+			if (!user) { alert('Please login to join clubs'); return null; }
+			// try backend
+			if (backendAvailable) {
+				try {
+					await apiPost('/memberships', { userId: user.id, clubId });
+					// refresh local view
+					await loadFromBackendOrLocal();
+					return (await getClubById(clubId));
+				} catch (err) {
+					console.warn('Backend join failed, falling back to local', err && err.message ? err.message : err);
+				}
+			}
+			// fallback local
+			const clubs = await getClubs(); const club = clubs.find(c => c.id === String(clubId));
+			if (club && user && !club.memberIds.includes(user.id)) { club.memberIds.push(user.id); await saveClubs(clubs); }
+			return club;
+		}
+		async function leaveClub(clubId) {
+			const user = getCurrentUser();
+			if (!user) return null;
+			// try backend: find membership then delete
+			if (backendAvailable) {
+				try {
+					const memberships = await apiGet('/memberships');
+					const m = (memberships || []).find(x => String(x.clubId) === String(clubId) && x.userId === user.id);
+					if (m) await apiDelete(`/memberships/${m.id}`);
+					await loadFromBackendOrLocal();
+					return (await getClubById(clubId));
+				} catch (err) {
+					console.warn('Backend leave failed, falling back to local', err && err.message ? err.message : err);
+				}
+			}
+			// fallback local
+			const clubs = await getClubs(); const club = clubs.find(c => c.id === String(clubId));
+			if (club && user) { club.memberIds = club.memberIds.filter(id => id !== user.id); await saveClubs(clubs); }
+			return club;
+		}
+		async function addEventToClub(clubId, { title, description, date }) {
+			const user = getCurrentUser();
+			// try backend
+			if (backendAvailable) {
+				try {
+					const payload = { clubId, title, description, datetime: new Date(date).toISOString() };
+					const ev = await apiPost('/events', payload);
+					await loadFromBackendOrLocal();
+					return { id: String(ev.id || ev._id), title: ev.title, description: ev.description, date: ev.datetime, rsvpUserIds: ev.rsvps || [] };
+				} catch (err) { console.warn('Backend add event failed, fallback local', err && err.message ? err.message : err); }
+			}
+			// fallback local
+			const clubs = await getClubs(); const club = clubs.find(c => c.id === String(clubId)); if (!club) return null;
+			const newEvent = { id: `e-${club.id}-${(club.events?.length || 0) + 1}`, title, description, date, rsvpUserIds: [] };
+			club.events = club.events || []; club.events.push(newEvent); await saveClubs(clubs); return newEvent;
+		}
+
+		async function updateClubLeaderName(clubId, leaderName) {
+			// No PUT /clubs/:id implemented on backend; update locally for now
+			const clubs = await getClubs();
+			const club = clubs.find(c => c.id === String(clubId));
+			if (!club) return null;
+			club.leaderName = (leaderName || '').trim() || club.leaderName || 'Club Leader';
+			await saveClubs(clubs);
+			return club;
+		}
+		async function toggleEventRsvp(clubId, eventId) {
+			const user = getCurrentUser(); if (!user) { alert('Please login to RSVP'); return null; }
+			// Try backend RSVP endpoint
+			if (backendAvailable) {
+				try {
+					const res = await apiPost(`/events/${eventId}/rsvp`, { userId: user.id });
+					// update local storage copy
+					await loadFromBackendOrLocal();
+					return res;
+				} catch (err) { console.warn('Backend RSVP failed, falling back local', err && err.message ? err.message : err); }
+			}
+			// fallback local
+			const clubs = await getClubs(); const club = clubs.find(c => c.id === String(clubId)); if (!club) return null;
+			const ev = (club.events || []).find(e => e.id === String(eventId)); if (!ev) return null;
+			const idx = ev.rsvpUserIds.indexOf(user.id); if (idx === -1) ev.rsvpUserIds.push(user.id); else ev.rsvpUserIds.splice(idx, 1);
+			await saveClubs(clubs); return ev;
+		}
+
+		// ----------------------------
+		// UI Helpers
+		// ----------------------------
+		function getClubVisuals(name) {
+			const n = (name || '').toUpperCase();
+			if (n.includes('AIML')) return badge('🧠💻', 'AI/ML', 'bg-violet-600');
+			if (n.includes('DEV')) return badge('💻', 'DEV', 'bg-indigo-600');
+			if (n.includes('TSOC')) return badge('🧠', 'CODING', 'bg-blue-600');
+			if (n.includes('MUN')) return badge('🌐', 'DEBATE', 'bg-cyan-600');
+			if (n.includes('SHUTTER BUG')) return badge('📷', 'PHOTO & VIDEO', 'bg-amber-600');
+			if (n.includes('CAPRICIO')) return badge('🎵', 'MUSIC', 'bg-pink-600');
+			if (n.includes('IGNITERS')) return badge('💃', 'DANCE', 'bg-fuchsia-600');
+			if (n.includes('CLUB DE THEATRE')) return badge('🎭', 'THEATRE', 'bg-rose-600');
+			if (n.includes('AARAMBH') || n.includes('SPORT')) return badge('🏃', 'SPORTS', 'bg-green-600');
+			return badge('🎓', 'CLUB', 'bg-slate-600');
+		}
+		function badge(emoji, label, bg) {
+			return { emoji, label, bg };
+		}
+
+		function setUserInHeader() {
+			const user = getCurrentUser();
+			const el = document.getElementById('current-user-name');
+			const hello = document.getElementById('hello-user');
+			const auth = document.getElementById('auth-actions');
+			if (el && user) el.textContent = user.name;
+			if (hello) hello.style.display = user ? 'inline' : 'none';
+			if (auth) {
+				auth.innerHTML = '';
+				if (!user) {
+					const login = document.createElement('a');
+					login.href = '#/login';
+					login.className = 'hover:text-teal-300 transition duration-150';
+					login.textContent = 'Login';
+					const register = document.createElement('a');
+					register.href = '#/register';
+					register.className = 'hover:text-teal-300 transition duration-150';
+					register.textContent = 'Register';
+					auth.appendChild(login);
+					auth.appendChild(register);
+				} else {
+					const logout = document.createElement('button');
+					logout.className = 'px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold shadow-inner transition';
+					logout.textContent = 'Logout';
+					logout.addEventListener('click', () => {
+						localStorage.removeItem(STORAGE_KEYS.currentUser);
+						router();
+					});
+					auth.appendChild(logout);
+				}
+			}
+		}
+
+		function applySavedTheme() {
+			const saved = localStorage.getItem(STORAGE_KEYS.theme) || 'light';
+			document.documentElement.setAttribute('data-theme', saved);
+			const btn = document.getElementById('theme-toggle');
+			if (btn) btn.textContent = saved === 'dark' ? 'Light' : 'Dark';
+			const select = document.getElementById('theme-select');
+			if (select) select.value = saved;
+		}
+		function setupThemeToggle() {
+			const btn = document.getElementById('theme-toggle');
+			if (!btn) return;
+			btn.addEventListener('click', () => {
+				const current = document.documentElement.getAttribute('data-theme') || 'light';
+				const next = current === 'dark' ? 'light' : 'dark';
+				document.documentElement.setAttribute('data-theme', next);
+				localStorage.setItem(STORAGE_KEYS.theme, next);
+				btn.textContent = next === 'dark' ? 'Light' : 'Dark';
+			});
+
+			const select = document.getElementById('theme-select');
+			if (select) {
+				select.addEventListener('change', (e) => {
+					const value = e.target.value;
+					document.documentElement.setAttribute('data-theme', value);
+					localStorage.setItem(STORAGE_KEYS.theme, value);
+					if (btn) btn.textContent = value === 'dark' ? 'Light' : 'Dark';
+				});
+			}
+		}
+
+		// ----------------------------
+		// Settings modal
+		// ----------------------------
+
+		// Simple overlay helpers used by modals (open/close)
+		function openOverlay(contentEl) {
+			// create backdrop
+			let overlay = document.getElementById('__iiitnr_overlay');
+			if (!overlay) {
+				overlay = document.createElement('div');
+				overlay.id = '__iiitnr_overlay';
+				overlay.style = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;z-index:60;';
+				overlay.innerHTML = `<div id="__iiitnr_backdrop" style="position:absolute;inset:0;background:rgba(2,6,23,.6);backdrop-filter: blur(3px);"></div><div id="__iiitnr_modal" style="position:relative;z-index:61;max-width:820px;width:100%;"></div>`;
+				document.body.appendChild(overlay);
+			}
+			const modal = document.getElementById('__iiitnr_modal');
+			if (modal) { modal.innerHTML = ''; modal.appendChild(contentEl); }
+			// close on backdrop click
+			document.getElementById('__iiitnr_backdrop')?.addEventListener('click', closeOverlay);
+		}
+		function closeOverlay() { const overlay = document.getElementById('__iiitnr_overlay'); if (overlay) overlay.remove(); }
+		function openSettingsModal() {
+			const currentBackendPref = localStorage.getItem('iiitnr.settings.useBackend') || 'auto';
+			const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || 'light';
+			const content = document.createElement('div');
+			content.innerHTML = `
+				<div>
+					<h3 class="text-xl font-semibold mb-4">Settings</h3>
+					<div class="mb-4">
+						<label class="label">Theme</label>
+						<select id="settings-theme" class="input w-48">
+							<option value="light">Light</option>
+							<option value="dark">Dark</option>
+						</select>
+					</div>
+					<div class="mb-4">
+						<label class="label">Data Source</label>
+						<select id="settings-backend" class="input w-48">
+							<option value="auto">Auto (use backend if available)</option>
+							<option value="backend">Always use backend</option>
+							<option value="local">Always use localStorage</option>
+						</select>
+						<p class="text-sm text-muted mt-2">Toggle whether the app should prefer the backend API or local demo data.</p>
+					</div>
+					<div class="flex justify-end gap-2">
+						<button id="settings-logout" class="btn bg-red-600 text-white">Logout</button>
+						<button id="settings-cancel" class="btn btn-ghost">Cancel</button>
+						<button id="settings-save" class="btn bg-indigo-600 text-white">Save</button>
+					</div>
+				</div>`;
+			openOverlay(content);
+			// set values
+			document.getElementById('settings-theme').value = savedTheme;
+			document.getElementById('settings-backend').value = currentBackendPref;
+			document.getElementById('settings-logout').addEventListener('click', (e) => {
+				e.preventDefault();
+				// clear user and return to login
+				localStorage.removeItem(STORAGE_KEYS.currentUser);
+				closeOverlay();
+				setUserInHeader();
+				window.location.hash = '#/login';
+			});
+			document.getElementById('settings-cancel').addEventListener('click', (e) => { e.preventDefault(); closeOverlay(); });
+			document.getElementById('settings-save').addEventListener('click', (e) => {
+				e.preventDefault();
+				const t = document.getElementById('settings-theme').value;
+				const b = document.getElementById('settings-backend').value;
+				localStorage.setItem(STORAGE_KEYS.theme, t);
+				document.documentElement.setAttribute('data-theme', t);
+				const btn = document.getElementById('theme-toggle'); if (btn) btn.textContent = t === 'dark' ? 'Light' : 'Dark';
+				localStorage.setItem('iiitnr.settings.useBackend', b);
+				// if user forces backend, try to load immediately
+				if (b === 'backend') { loadFromBackendOrLocal().then(()=>{ router(); }); }
+				closeOverlay();
+			});
+		}
+		// wire header settings button
+		document.getElementById('settings-btn')?.addEventListener('click', (e) => { e.preventDefault(); openSettingsModal(); });
+
+	// ----------------------------
+	// Event update (edit) helpers
+	// ----------------------------
+
+	async function updateEvent(eventId, { title, description, date }) {
+		// try backend
+		if (backendAvailable) {
+			try {
+				const payload = { title, description, datetime: new Date(date).toISOString() };
+				const updated = await apiPut(`/events/${eventId}`, payload);
+				await loadFromBackendOrLocal();
+				return updated;
+			} catch (err) { console.warn('Backend event update failed, falling back local', err && err.message ? err.message : err); }
+		}
+		// fallback local
+		const clubs = await getClubs();
+		for (const club of clubs) {
+			if (!club.events) continue;
+			const ev = club.events.find(e => String(e.id) === String(eventId));
+			if (ev) {
+				ev.title = title; ev.description = description; ev.date = date;
+				await saveClubs(clubs);
+				return ev;
+			}
+		}
+		return null;
+	}
+
+	async function deleteClub(clubId) {
+		if (backendAvailable) {
+			try { await apiDelete(`/clubs/${clubId}`); await loadFromBackendOrLocal(); return true; } catch (e) { console.warn('Backend delete club failed', e); }
+		}
+		// fallback local
+		const clubs = await getClubs();
+		const idx = clubs.findIndex(c => String(c.id) === String(clubId));
+		if (idx !== -1) { clubs.splice(idx, 1); await saveClubs(clubs); return true; }
+		return false;
+	}
+
+		// ----------------------------
+		// Views
+		// ----------------------------
+		function renderAuthCard({ title, submitText, fields, onSubmit, altRoute }) {
+			const app = document.getElementById('app');
+			app.innerHTML = `
+				<section>
+					<div class="card p-8 sm:p-10 max-w-xl mx-auto">
+						<h1 class="text-3xl font-extrabold text-indigo-800 mb-6">${title}</h1>
+						<form id="auth-form" class="grid grid-cols-1 gap-4">
+							${fields.map(f => `
+								<div>
+									<label class="label" for="${f.id}">${f.label}</label>
+									<input class="input" type="${f.type}" id="${f.id}" name="${f.id}" ${f.required ? 'required' : ''} />
+								</div>`).join('')}
+							<button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white mt-2">${submitText}</button>
+						</form>
+						<div class="mt-4 text-sm">
+							<a class="text-indigo-600 hover:underline" href="${altRoute.href}">${altRoute.text}</a>
+						</div>
+					</div>
+				</section>
+			`;
+			const form = document.getElementById('auth-form');
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const data = Object.fromEntries(new FormData(form).entries());
+				await onSubmit(data);
+			});
+		}
+
+		async function renderLogin() {
+			// Custom richer student login form
+			const app = document.getElementById('app');
+			app.innerHTML = `
+				<section>
+					<div class="card p-8 sm:p-10 max-w-xl mx-auto">
+						<h1 class="text-3xl font-extrabold text-indigo-800 mb-6">Student Login</h1>
+						<form id="student-login-form" class="grid grid-cols-1 gap-4">
+							<div>
+								<label class="label">Full Name</label>
+								<input class="input" id="stu-name" type="text" required />
+							</div>
+							<div>
+								<label class="label">Branch</label>
+								<input class="input" id="stu-branch" type="text" placeholder="e.g. CSE, ECE" required />
+							</div>
+							<div>
+								<label class="label">Academic Year</label>
+								<select id="stu-year" class="input">
+									<option value="1">1st Year</option>
+									<option value="2">2nd Year</option>
+									<option value="3">3rd Year</option>
+									<option value="4">4th Year</option>
+								</select>
+							</div>
+							<div>
+								<label class="label">College Email</label>
+								<input class="input" id="stu-email" type="email" placeholder="you@iiitnr.edu.in" required />
+							</div>
+							<div class="flex justify-between items-center">
+								<button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Login</button>
+								<a href="#/register" class="text-sm text-indigo-600 hover:underline">Don't have an account? Register</a>
+							</div>
+						</form>
+					</div>
+				</section>
+			`;
+			const form = document.getElementById('student-login-form');
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const name = document.getElementById('stu-name').value.trim();
+				const branch = document.getElementById('stu-branch').value.trim();
+				const year = document.getElementById('stu-year').value;
+				const email = document.getElementById('stu-email').value.trim();
+				// store richer user object
+				const user = { id: 'u-1', name: name || 'Student User', branch, year: Number(year), email };
+				localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify(user));
+				// After login, load data according to settings
+				const pref = localStorage.getItem('iiitnr.settings.useBackend') || 'auto';
+				if (pref === 'backend') {
+					await loadFromBackendOrLocal();
+				} else if (pref === 'auto') {
+					const ok = await loadFromBackendOrLocal(); if (!ok) await seedIfNeeded();
+				} else {
+					await seedIfNeeded();
+				}
+				setUserInHeader();
+				window.location.hash = '#/';
+				router();
+			});
+		}
+
+		async function renderRegister() {
+			renderAuthCard({
+				title: 'Register',
+				submitText: 'Create Account',
+				fields: [
+					{ id: 'username', label: 'Username', type: 'text', required: true },
+					{ id: 'email', label: 'Email', type: 'email', required: true },
+					{ id: 'password', label: 'Password', type: 'password', required: true }
+				],
+				altRoute: { href: '#/login', text: 'Already have an account? Login' },
+				onSubmit: async ({ username }) => {
+					const name = username || 'Student User';
+					localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify({ id: 'u-1', name }));
+					window.location.hash = '#/';
+				}
+			});
+		}
+		async function renderHome() {
+			const app = document.getElementById('app');
+			app.innerHTML = `
+				<section>
+					<div class="rounded-3xl p-8 sm:p-12 mb-8 shadow-2xl text-white" style="background-image: linear-gradient(135deg, #4f46e5 0%, #a855f7 100%);">
+						<h1 class="text-4xl sm:text-5xl font-extrabold mb-2">IIIT-NR Club Portal</h1>
+						<p class="text-indigo-200 text-lg mb-6">Building smart projects, learning AI/ML, and turning data into real-world solutions.</p>
+						<a href="#/create" class="btn bg-white text-indigo-700 hover:bg-gray-100">+ Create New Club</a>
+					</div>
+
+					<div class="card p-4 mb-6">
+						<div class="flex flex-col md:flex-row gap-3 md:items-center justify-between">
+							<div class="flex items-center gap-2">
+								<span class="text-sm font-bold text-gray-700">Theme</span>
+								<select id="theme-select" class="input w-40">
+									<option value="light">Light</option>
+									<option value="dark">Dark</option>
+								</select>
+							</div>
+							<a href="#/support" class="btn bg-sky-600 hover:bg-sky-700 text-white">Contact Support</a>
+						</div>
+					</div>
+
+					<div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6">
+						<h2 class="text-2xl font-extrabold text-gray-800">Explore Clubs</h2>
+						<input id="search-input" type="text" placeholder="Search clubs..." class="input w-full sm:w-96" />
+					</div>
+
+					<div id="club-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+				</section>
+			`;
+			const clubs = await getClubs();
+			const search = document.getElementById('search-input');
+			const render = (items) => renderClubCards(items);
+			render(clubs);
+			search?.addEventListener('input', (e) => {
+				const q = e.target.value.toLowerCase();
+				render(clubs.filter(c => c.name.toLowerCase().includes(q) || c.description.toLowerCase().includes(q)));
+			});
+		}
+
+		function renderClubCards(clubs) {
+			const list = document.getElementById('club-list');
+			if (!list) return;
+			list.innerHTML = '';
+			clubs.forEach(club => {
+				const visuals = getClubVisuals(club.name);
+				const card = document.createElement('div');
+				card.className = 'card group p-6 border-b-4 border-teal-500';
+				card.innerHTML = `
+					<div class="flex items-start mb-4">
+						<div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 shadow-md ${visuals.bg} text-white">${visuals.emoji}</div>
+						<div class="flex-grow min-w-0">
+							<div class="flex items-center gap-2">
+								<h3 class="text-lg font-bold text-gray-800 group-hover:text-teal-700 transition truncate">${club.name}</h3>
+								<span class="badge bg-gray-900/10 text-gray-700">${visuals.label}</span>
+							</div>
+							<p class="text-muted mt-1 line-clamp-2 text-sm">${club.description}</p>
+						</div>
+					</div>
+					<div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-sm font-semibold">
+						<a href="#/club/${club.id}" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">View Details</a>
+						<div class="text-xs text-gray-600">Head: <span class="font-bold">${getLeaderName(club)}</span></div>
+					</div>
+				`;
+				list.appendChild(card);
+			});
+		}
+
+		async function renderClubDetail(id) {
+			const club = await getClubById(id);
+			const user = getCurrentUser();
+			const app = document.getElementById('app');
+			if (!club) { app.innerHTML = `<div class="card p-8">Club not found.</div>`; return; }
+
+			const isMember = club.memberIds.includes(user?.id);
+			app.innerHTML = `
+				<section class="club-detail">
+					<div class="card p-8 sm:p-10 border-t-8 border-indigo-600">
+						<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-6 mb-8">
+							<div>
+								<h1 class="text-3xl sm:text-4xl font-extrabold text-indigo-800" id="club-name">${club.name}</h1>
+								<p class="text-muted mt-2" id="club-description">${club.description}</p>
+								<div class="flex flex-col gap-2 mt-3">
+									<div class="flex gap-6 text-sm items-center">
+										<span class="font-semibold text-gray-700">Leader: <span id="club-leader" class="text-indigo-700">${getLeaderName(club)}</span></span>
+										<button id="edit-head-btn" class="btn bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1">Edit Head</button>
+									</div>
+									<form id="edit-head-form" class="hidden items-center gap-2">
+										<input id="edit-head-input" class="input" type="text" placeholder="Enter new head name" value="${getLeaderName(club)}" />
+										<button class="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs" type="submit">Save</button>
+										<button class="btn bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs" type="button" id="cancel-edit-head">Cancel</button>
+									</form>
+									<span class="font-semibold text-gray-700">Members: <span id="club-member-count" class="text-indigo-700">${String(club.memberIds.length)}</span></span>
+								</div>
+							</div>
+							<button id="join-leave-button" class="btn ${isMember ? 'bg-rose-600 hover:bg-rose-700' : 'bg-teal-600 hover:bg-teal-700'} text-white mt-4 sm:mt-0">${isMember ? 'Leave Club' : 'Join Club'}</button>
+							${club.leaderId === user?.id ? '<button id="delete-club-button" class="btn bg-red-600 hover:bg-red-700 text-white mt-4 sm:mt-0 ml-2">Delete Club</button>' : ''}
+						</div>
+
+						<h2 class="text-2xl font-extrabold text-gray-800 mb-4">Members</h2>
+						<ul id="member-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8"></ul>
+
+						<h2 class="text-2xl font-extrabold text-gray-800 mb-4">Upcoming Events</h2>
+						<ul id="event-list" class="space-y-4 mb-8"></ul>
+
+						<section id="owner-event-form" class="${club.leaderId === user?.id ? 'block' : 'hidden'} bg-teal-50 p-6 rounded-xl shadow-inner border border-teal-200">
+							<h3 class="text-2xl font-bold text-teal-700 mb-4">Create Event</h3>
+							<form id="event-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label class="label" for="event-name">Event Title</label>
+									<input class="input" type="text" id="event-name" required />
+								</div>
+								<div>
+									<label class="label" for="event-date">Date & Time</label>
+									<input class="input" type="datetime-local" id="event-date" required />
+								</div>
+								<div class="md:col-span-2">
+									<label class="label" for="event-description">Description</label>
+									<textarea class="input" id="event-description" required></textarea>
+								</div>
+								<div class="md:col-span-2 flex justify-end">
+									<button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Post Event</button>
+								</div>
+							</form>
+						</section>
+					</div>
+				</section>
+			`;
+
+			// Members
+			const list = document.getElementById('member-list');
+			list.innerHTML = '';
+			(club.memberIds || []).forEach(idm => {
+				const li = document.createElement('li');
+				li.className = 'px-4 py-2 rounded-lg bg-gray-50 border border-gray-200';
+				li.textContent = idm === user?.id ? `${idm} (You)` : idm;
+				list.appendChild(li);
+			});
+
+			// Events
+			const eventList = document.getElementById('event-list');
+			eventList.innerHTML = '';
+			(club.events || []).forEach(ev => {
+				const rsvpCount = ev.rsvpUserIds?.length || 0;
+				const li = document.createElement('li');
+				li.innerHTML = `
+					<div class="card">
+						<div class="text-lg font-bold">${ev.title}</div>
+						<div class="text-muted">${ev.description}</div>
+						<div class="mt-2"><span class="font-semibold">Date:</span> ${ev.date}</div>
+						<div class="mt-1"><span class="font-semibold">RSVPs:</span> <span data-rsvp-count="${ev.id}">${rsvpCount}</span></div>
+						<div class="mt-3 flex gap-2 flex-wrap actions-row">
+							<button class="btn bg-emerald-600 hover:bg-emerald-700 text-white" data-rsvp="${ev.id}">RSVP</button>
+						</div>
+					</div>
+				`;
+
+				// If current user is the club owner, add an Edit button
+				if (club.leaderId === user?.id) {
+					const actions = li.querySelector('.actions-row');
+					if (actions) {
+						const editBtn = document.createElement('button');
+						editBtn.className = 'btn bg-amber-500 hover:bg-amber-600 text-white';
+						editBtn.textContent = 'Edit';
+						editBtn.dataset.edit = ev.id;
+						actions.appendChild(editBtn);
+						editBtn.addEventListener('click', () => {
+							// build modal
+							const content = document.createElement('div');
+							content.innerHTML = `
+								<div class="card p-6">
+									<h3 class="text-xl font-bold mb-4">Edit Event</h3>
+									<form id="edit-event-form" class="grid grid-cols-1 gap-3">
+										<div>
+											<label class="label">Title</label>
+											<input id="edit-event-title" class="input" type="text" required />
+										</div>
+										<div>
+											<label class="label">Date & Time</label>
+											<input id="edit-event-date" class="input" type="datetime-local" required />
+										</div>
+										<div>
+											<label class="label">Description</label>
+											<textarea id="edit-event-desc" class="input" rows="4" required></textarea>
+										</div>
+										<div class="flex justify-end gap-2">
+											<button type="button" id="edit-cancel" class="btn bg-gray-200 text-gray-800">Cancel</button>
+											<button type="submit" class="btn bg-indigo-600 text-white">Save</button>
+										</div>
+									</form>
+								</div>`;
+							openOverlay(content);
+							// populate form
+							document.getElementById('edit-event-title').value = ev.title || '';
+							// format date for datetime-local
+							try {
+								const d = new Date(ev.date || ev.datetime || Date.now());
+								const tzOffset = d.getTimezoneOffset();
+								const local = new Date(d.getTime() - tzOffset * 60000);
+								document.getElementById('edit-event-date').value = local.toISOString().slice(0,16);
+							} catch(e) { /* ignore */ }
+							document.getElementById('edit-event-desc').value = ev.description || '';
+							// handlers
+							document.getElementById('edit-cancel').addEventListener('click', (e) => { e.preventDefault(); closeOverlay(); });
+							document.getElementById('edit-event-form').addEventListener('submit', async (e) => {
+								e.preventDefault();
+								const newTitle = document.getElementById('edit-event-title').value.trim();
+								const newDesc = document.getElementById('edit-event-desc').value.trim();
+								const newDate = document.getElementById('edit-event-date').value;
+								await updateEvent(ev.id, { title: newTitle, description: newDesc, date: newDate });
+								closeOverlay();
+								renderClubDetail(id);
+							});
+						});
+					}
+				}
+				li.querySelector('[data-rsvp]').addEventListener('click', async () => {
+					const updated = await toggleEventRsvp(club.id, ev.id);
+					const countEl = li.querySelector(`[data-rsvp-count="${ev.id}"]`);
+					if (updated && countEl) countEl.textContent = String(updated.rsvpUserIds.length);
+				});
+				eventList.appendChild(li);
+			});
+
+			// Join/Leave
+			document.getElementById('join-leave-button')?.addEventListener('click', async () => {
+				const fresh = await getClubById(id);
+				if (fresh.memberIds.includes(user?.id)) await leaveClub(id); else await joinClub(id);
+				renderClubDetail(id);
+			});
+
+			// Delete club (owner only)
+			const deleteBtn = document.getElementById('delete-club-button');
+			if (deleteBtn) {
+				deleteBtn.addEventListener('click', async () => {
+					if (!confirm('Are you sure you want to DELETE this club? This action cannot be undone.')) return;
+					// try backend first
+					try {
+						if (backendAvailable) {
+							await apiDelete(`/clubs/${id}`);
+							await loadFromBackendOrLocal();
+						} else {
+							// local fallback
+							const clubs = await getClubs();
+							const idx = clubs.findIndex(c => String(c.id) === String(id));
+							if (idx !== -1) { clubs.splice(idx, 1); await saveClubs(clubs); }
+						}
+						window.location.hash = '#/';
+					} catch (err) {
+						console.error('Delete club failed:', err);
+						alert('Failed to delete club. See console for details.');
+					}
+				});
+			}
+
+			// Edit club head inline
+			const editBtn = document.getElementById('edit-head-btn');
+			const form = document.getElementById('edit-head-form');
+			const cancelBtn = document.getElementById('cancel-edit-head');
+			if (editBtn && form && cancelBtn) {
+				editBtn.addEventListener('click', () => {
+					form.classList.remove('hidden');
+				});
+				cancelBtn.addEventListener('click', () => {
+					form.classList.add('hidden');
+				});
+				form.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const newName = document.getElementById('edit-head-input').value;
+					await updateClubLeaderName(id, newName);
+					renderClubDetail(id);
+				});
+			}
+
+			// Owner event form
+			const eventForm = document.getElementById('event-form');
+			if (eventForm && club.leaderId === user?.id) {
+				eventForm.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					await addEventToClub(id, {
+						title: document.getElementById('event-name').value,
+						description: document.getElementById('event-description').value,
+						date: document.getElementById('event-date').value
+					});
+					renderClubDetail(id);
+					eventForm.reset();
+				});
+			}
+		}
+
+		async function renderCreateClub() {
+			const app = document.getElementById('app');
+			app.innerHTML = `
+				<section>
+				     <div class="card p-8 sm:p-10">
+						<h1 class="text-3xl font-extrabold text-indigo-800 mb-6">Create a New Club</h1>
+						<form id="create-club-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div class="md:col-span-2">
+								<label class="label" for="club-name">Club Name</label>
+								<input class="input" type="text" id="club-name" name="club-name" required />
+							</div>
+							<div class="md:col-span-2">
+								<label class="label" for="club-description">Description</label>
+								<textarea class="input" id="club-description" name="club-description" required></textarea>
+							</div>
+							<div class="md:col-span-2 flex justify-end">
+								<button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Create Club</button>
+							</div>
+						</form>
+					</div>
+				</section>
+			`;
+			const form = document.getElementById('create-club-form');
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const name = document.getElementById('club-name').value.trim();
+				const description = document.getElementById('club-description').value.trim();
+				if (!name || !description) return;
+				const created = await createClub({ name, description });
+				if (created) window.location.hash = `#/club/${created.id}`;
+			});
+		}
+
+		async function renderSupport() {
+			const app = document.getElementById('app');
+			app.innerHTML = `
+				<section>
+					<div class="card p-8 sm:p-10 max-w-2xl mx-auto">
+						<h1 class="text-3xl font-extrabold text-indigo-800 mb-4">Contact Support</h1>
+						<p class="text-muted mb-6">Have an issue or feedback? Send us a message and we’ll get back to you.</p>
+						<p class="text-sm text-gray-600 mb-4">You can also visit the official IIIT-NR website: <a href="https://www.iiitnr.ac.in/" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">https://www.iiitnr.ac.in/</a></p>
+						<form id="support-form" class="grid grid-cols-1 gap-4">
+							<div>
+								<label class="label" for="support-name">Your Name</label>
+								<input class="input" id="support-name" type="text" required />
+							</div>
+							<div>
+								<label class="label" for="support-email">Email</label>
+								<input class="input" id="support-email" type="email" required />
+							</div>
+							<div>
+								<label class="label" for="support-message">Message</label>
+								<textarea class="input" id="support-message" rows="5" required></textarea>
+							</div>
+							<button class="btn bg-sky-600 hover:bg-sky-700 text-white" type="submit">Send</button>
+						</form>
+						<p id="support-status" class="mt-4 text-sm text-green-700 hidden">Thanks! Your message has been recorded.</p>
+					</div>
+				</section>
+			`;
+			const form = document.getElementById('support-form');
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const entry = {
+					name: document.getElementById('support-name').value,
+					email: document.getElementById('support-email').value,
+					message: document.getElementById('support-message').value,
+					date: new Date().toISOString()
+				};
+				// try backend first if available
+				let saved = false;
+				if (backendAvailable) {
+					try {
+						// attempt POST /support (server may ignore if not implemented)
+						await apiPost('/support', entry);
+						saved = true;
+					} catch (err) {
+						console.warn('Support POST failed, saving locally', err && err.message ? err.message : err);
+					}
+				}
+				if (!saved) {
+					const key = 'iiitnr.support.tickets';
+					const existing = JSON.parse(localStorage.getItem(key) || '[]');
+					existing.push(entry);
+					localStorage.setItem(key, JSON.stringify(existing));
+				}
+				document.getElementById('support-status').classList.remove('hidden');
+				form.reset();
+			});
+		}
+
+		// ----------------------------
+		// Minimal Router (#/ routes)
+		// ----------------------------
+		function parseRoute() {
+			const hash = window.location.hash || '#/'
+			const parts = hash.replace(/^#\//, '').split('/');
+			// routes: /, /create, /club/:id, /login, /register, /support
+			if (!parts[0]) return { name: 'home' };
+			if (parts[0] === 'create') return { name: 'create' };
+			if (parts[0] === 'club' && parts[1]) return { name: 'club', id: parts[1] };
+			if (parts[0] === 'login') return { name: 'login' };
+			if (parts[0] === 'register') return { name: 'register' };
+			if (parts[0] === 'support') return { name: 'support' };
+			return { name: 'home' };
+		}
+
+		async function router() {
+			await seedIfNeeded();
+			setUserInHeader();
+			applySavedTheme();
+			setupThemeToggle();
+
+			const route = parseRoute();
+			if (route.name === 'home') return renderHome();
+			if (route.name === 'create') return renderCreateClub();
+			if (route.name === 'club') return renderClubDetail(route.id);
+			if (route.name === 'login') return renderLogin();
+			if (route.name === 'register') return renderRegister();
+			if (route.name === 'support') return renderSupport();
+			return renderHome();
+		}
+
+		window.addEventListener('hashchange', router);
+		window.addEventListener('DOMContentLoaded', async () => {
+			// Apply theme and header first
+			applySavedTheme();
+			setupThemeToggle();
+			setUserInHeader();
+
+			// If no user is stored, force the login page immediately and
+			// defer loading/seeding of app data until after authentication.
+			const currentUser = localStorage.getItem(STORAGE_KEYS.currentUser);
+			if (!currentUser) {
+				// show login view
+				window.location.hash = '#/login';
+				renderLogin();
+				return;
+			}
+
+			// respect settings and load data only after we have a user
+			const pref = localStorage.getItem('iiitnr.settings.useBackend') || 'auto';
+			if (pref === 'backend') {
+				await loadFromBackendOrLocal();
+				if (!backendAvailable) console.info('Backend not reachable (forced).');
+			} else if (pref === 'auto') {
+				const ok = await loadFromBackendOrLocal();
+				if (!ok) await seedIfNeeded();
+			} else {
+				await seedIfNeeded();
+			}
+
+			router();
+		});
+
+		// ----------------------------
+		// Digital clocks (Local + UTC)
+		// ----------------------------
+		function pad(n) { return String(n).padStart(2, '0'); }
+		function updateDigitalClocks() {
+			const now = new Date();
+			const local = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+			const utc = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+			const localEl = document.getElementById('digital-local');
+			const utcEl = document.getElementById('digital-utc');
+			if (localEl) localEl.textContent = local;
+			if (utcEl) utcEl.textContent = utc;
+		}
+
+		// start digital clocks
+		setInterval(updateDigitalClocks, 1000);
+		updateDigitalClocks();
+
+
+	</script>
+</body>
+</html>
